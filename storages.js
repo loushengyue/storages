@@ -2,39 +2,39 @@
  *      LsyStorage
  *      author loushengyue
  *      website http://www.loushengyue.com
- *      version 1.0.3
+ *      version 1.1.0
  *      methods
  *              .getItem(key[string])
  *              .getItemsByKeys(keys[array])
  *              .getArr(prex[string])
- *              .setItem(key[string],value[string,object])
- *              .setArr(prex[string],values[array])
+ *              .setItem(key[string],value[string|object])
+ *              .setArr(prex[string],values[array],id[boolean])
  *              .setList(keys[array],values[array])
  *              .removeItem(key[string])
- *              .clearAll()
+ *              .clearAll(),clear()
  */
 
 /* *
  *      LsySession
  *      author loushengyue
  *      website http://www.loushengyue.com
- *      version 1.0.3
+ *      version 1.1.0
  *      methods
  *              .getItem(key[string])
  *              .getItemsByKeys(keys[array])
  *              .getArr(prex[string])
- *              .setItem(key[string],value[string,object])
- *              .setArr(prex[string],values[array])
+ *              .setItem(key[string],value[string|object])
+ *              .setArr(prex[string],values[array],id[boolean])
  *              .setList(keys[array],values[array])
  *              .removeItem(key[string])
- *              .clearAll()
+ *              .clearAll(),clear()
  */
 
 /* *
  *      LsyCookie
  *      author loushengyue
  *      website http://www.loushengyue.com
- *      version 1.0.3
+ *      version 1.1.0
  *      methods [set(),get(),getAll(),clear(),clearAll()]
  */
 ;(function (win, doc) {
@@ -42,7 +42,7 @@
      *      The constructor of Storages
      */
     var Storages = function () {
-        this.version = '1.0.3';
+        this.version = '1.1.0';
     };
     /* *
      *      ckeck val is the right typeof string, if not, change it.
@@ -62,8 +62,7 @@
      */
     Storages.prototype.checkKey = function (key) {
         if (typeof key != 'string') {
-            console.log('the key is not string!');
-            return false;
+            throw new Error('The typeof key argument in setItem(key[string],value[string|object]){...} must be string. But the typeof your argument "' + key + '" is ' + typeof key);
         }
         return true;
     };
@@ -73,10 +72,9 @@
      *      valArr     typeof Array
      *      return     typeof boolean
      */
-    Storages.prototype.checkKeyVal = function (keyArr, valArr) {
-        if (keyArr.length != valArr.length) {
-            console.log('The length of keyArr and valArr need eq.');
-            return false;
+    Storages.prototype.checkKeyVal = function (keys, values) {
+        if (keys.length != values.length) {
+            throw new Error('The length of keys and values in setList(keys, values) need eq. The keys.length=' + keys.length + ', but values.length=' + values.length);
         }
         return true;
     };
@@ -175,14 +173,20 @@
      *  ----------------------------------------------------------------------
      */
     var LsyStorage = function () {
-        this.version = 'Lsy localStorage 1.0.3';
+        this.version = 'Lsy localStorage 1.1.0';
     };
-    LsyStorage.prototype = new Storages();
+    /* *
+     *      class LsyCookie extends Storages
+     */
+    LsyStorage.prototype = Object.create(Storages.prototype);
     LsyStorage.prototype.constructor = LsyStorage;
     /* *
      *      Clear localStorage. Like the methods of clear().
      */
     LsyStorage.prototype.clearAll = function () {
+        win.localStorage.clear();
+    };
+    LsyStorage.prototype.clear = function () {
         win.localStorage.clear();
     };
     /* *
@@ -232,14 +236,20 @@
      *  ----------------------------------------------------------------------
      */
     var LsySession = function () {
-        this.version = 'Lsy sessionStorage 1.0.3';
+        this.version = 'Lsy sessionStorage 1.1.0';
     };
-    LsySession.prototype = new Storages();
+    /* *
+     *      class LsyCookie extends Storages
+     */
+    LsySession.prototype = Object.create(Storages.prototype);
     LsySession.prototype.constructor = LsySession;
     /* *
      *      Clear sessionStorage. Like the methods of clear().
      */
     LsySession.prototype.clearAll = function () {
+        win.sessionStorage.clear();
+    };
+    LsySession.prototype.clear = function () {
         win.sessionStorage.clear();
     };
     /* *
@@ -290,12 +300,29 @@
      *  ----------------------------------------------------------------------
      */
 
-    /* *
-     *      The constructor of LsyCookie
-     *      version 1.0.3
-     */
     var LsyCookie = function () {
-        this.version = 'Lsy cookies 1.0.3';
+        this.version = 'Lsy cookies 1.0.5';
+        this.expiresTime = 7 * 24 * 3600;
+    };
+    /* *
+     *      class LsyCookie extends Storages
+     */
+    LsyCookie.prototype = Object.create(Storages.prototype);
+    LsyCookie.prototype.constructor = LsyCookie;
+    /* *
+     *      reset expires time
+     *      time     typeof number[7days]
+     */
+    LsyCookie.prototype.resetTime = function (time) {
+        if (time != null) {
+            if (isNaN(time)) {
+                throw new Error('The typeof time argument in resetTime(time){...} must be number. But the typeof your argument "' + time + '" is ' + typeof time);
+            }
+            time = time > 0 ? time : -1;
+        } else {
+            time = this.expiresTime;
+        }
+        return time;
     };
     /* *
      *      create cookie by key and value, and set expires time
@@ -304,13 +331,13 @@
      *      time    typeof number[7days]
      */
     LsyCookie.prototype.set = function (key, val, time) {
-        if (typeof key !== 'string' || typeof val !== 'string') {
-            return false;
+        if (this.checkKey(key)) {
+            val = this.checkVal(val);
+            time = this.resetTime(time);
+            var exp = new Date();
+            exp.setTime(exp.getTime() + time * 1000);
+            doc.cookie = key + '=' + val + ';expires=' + exp.toGMTString();
         }
-        time = time || 7 * 24 * 3600;
-        var exp = new Date();
-        exp.setTime(exp.getTime() + time * 1000);
-        doc.cookie = key + '=' + val + ';expires=' + exp.toGMTString();
     };
     /* *
      *      remove cookie by key
@@ -335,9 +362,14 @@
     LsyCookie.prototype.getAll = function () {
         var cookies = doc.cookie.split(/;\s/g);
         var cookieObj = {};
+        var _this = this;
         cookies.forEach(function (item) {
             var key = item.split('=')[0];
-            cookieObj[key] = item.split('=')[1];
+            var val = item.split('=')[1];
+            if (_this.isJsonStr(val)) {
+                val = JSON.parse(val);
+            }
+            cookieObj[key] = val;
         });
         return cookieObj;
     };
