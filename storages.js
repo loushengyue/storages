@@ -2,13 +2,13 @@
  *      LsyStorage
  *      author loushengyue
  *      website http://www.loushengyue.com
- *      version 1.1.0
+ *      version 1.1.1
  *      methods
  *              .getItem(key[string])
  *              .getItemsByKeys(keys[array])
  *              .getArr(prex[string])
  *              .setItem(key[string],value[string|object])
- *              .setArr(prex[string],values[array],id[boolean])
+ *              .setArr(prex[string],values[array],byId[boolean])
  *              .setList(keys[array],values[array])
  *              .removeItem(key[string])
  *              .clearAll(),clear()
@@ -18,13 +18,13 @@
  *      LsySession
  *      author loushengyue
  *      website http://www.loushengyue.com
- *      version 1.1.0
+ *      version 1.1.1
  *      methods
  *              .getItem(key[string])
  *              .getItemsByKeys(keys[array])
  *              .getArr(prex[string])
  *              .setItem(key[string],value[string|object])
- *              .setArr(prex[string],values[array],id[boolean])
+ *              .setArr(prex[string],values[array],byId[boolean])
  *              .setList(keys[array],values[array])
  *              .removeItem(key[string])
  *              .clearAll(),clear()
@@ -34,7 +34,7 @@
  *      LsyCookie
  *      author loushengyue
  *      website http://www.loushengyue.com
- *      version 1.1.0
+ *      version 1.1.1
  *      methods [set(),get(),getAll(),clear(),clearAll()]
  */
 ;(function (win, doc) {
@@ -42,7 +42,7 @@
      *      The constructor of Storages
      */
     var Storages = function () {
-        this.version = '1.1.0';
+        this.version = '1.1.1';
     };
     /* *
      *      ckeck val is the right typeof string, if not, change it.
@@ -111,16 +111,36 @@
             }
         }
     };
+
+    Storages.prototype.hasIdProperty = function (obj) {
+        if (typeof obj !== 'object') {
+            throw new Error('The obj augument in hasIdProperty(obj){...} is not object');
+        }
+        if (!obj.hasOwnProperty('id')) {
+            throw new Error('This Object of ' + obj + ' has not id property.');
+        }
+        return true;
+    };
     /* *
      *      setItem by prex and arr
      *      prex       typeof String
      *      arr        typeof Array
      */
-    Storages.prototype.setArr = function (prex, arr, id) {
+    Storages.prototype.setArr = function (prex, arr, byId) {
         if (this.checkArr(arr)) {
-            for (var i = 0, n = arr.length; i < n; i++) {
-                var key = id ? prex + '_' + arr[i].id : prex + '_' + i;
-                this.setItem(key, arr[i]);
+            var key, i = 0, n = arr.length;
+            if (!byId) {
+                for (; i < n; i++) {
+                    key = prex + '_' + i;
+                    this.setItem(key, arr[i]);
+                }
+            } else {
+                for (; i < n; i++) {
+                    if (this.hasIdProperty(arr[i])) {
+                        key = prex + '_' + arr[i].id;
+                        this.setItem(key, arr[i]);
+                    }
+                }
             }
         } else {
             this.setItem(prex, arr);
@@ -173,7 +193,7 @@
      *  ----------------------------------------------------------------------
      */
     var LsyStorage = function () {
-        this.version = 'Lsy localStorage 1.1.0';
+        this.version = 'Lsy localStorage 1.1.1';
     };
     /* *
      *      class LsyCookie extends Storages
@@ -236,7 +256,7 @@
      *  ----------------------------------------------------------------------
      */
     var LsySession = function () {
-        this.version = 'Lsy sessionStorage 1.1.0';
+        this.version = 'Lsy sessionStorage 1.1.1';
     };
     /* *
      *      class LsyCookie extends Storages
@@ -301,7 +321,7 @@
      */
 
     var LsyCookie = function () {
-        this.version = 'Lsy cookies 1.0.5';
+        this.version = 'Lsy cookies 1.1.1';
         this.expiresTime = 7 * 24 * 3600;
     };
     /* *
