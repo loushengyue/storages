@@ -118,10 +118,10 @@
      *      prex       typeof String
      *      arr        typeof Array
      */
-    Storages.prototype.setArr = function (prex, arr) {
+    Storages.prototype.setArr = function (prex, arr, id) {
         if (this.checkArr(arr)) {
             for (var i = 0, n = arr.length; i < n; i++) {
-                var key = prex + '_' + i;
+                var key = id ? prex + '_' + arr[i].id : prex + '_' + i;
                 this.setItem(key, arr[i]);
             }
         } else {
@@ -136,7 +136,7 @@
         if (!keys instanceof Array) {
             return false;
         }
-        keys.map(function (a, b) {
+        keys.sort(function (a, b) {
             a = Number(a.match(/_\d+$/)[0].substr(1));
             b = Number(b.match(/_\d+$/)[0].substr(1));
             return a - b;
@@ -165,6 +165,7 @@
     Storages.prototype.getItemsByKeys = function (keys) {
         var arr = [];
         var _this = this;
+        keys = _this.sortKeys(keys);
         keys.forEach(function (key) {
             arr.push(_this.getItem(key));
         });
