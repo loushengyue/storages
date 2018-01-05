@@ -64,7 +64,6 @@
         if (typeof key != 'string') {
             throw new Error('The typeof key argument in setItem(key[string],value[string|object]){...} must be string. But the typeof your argument "' + key + '" is ' + typeof key);
         }
-        return true;
     };
     /* *
      *      ckeck the length of keyArr and valArr, if them are not eq, return false.
@@ -76,7 +75,6 @@
         if (keys.length != values.length) {
             throw new Error('The length of keys and values in setList(keys, values) need eq. The keys.length=' + keys.length + ', but values.length=' + values.length);
         }
-        return true;
     };
     /* *
      *      ckeck the typeof str.
@@ -105,10 +103,9 @@
      *      values     typeof values
      */
     Storages.prototype.setList = function (keys, values) {
-        if (this.checkKeyVal(keys, values)) {
-            for (var i = 0, n = keys.length; i < n; i++) {
-                this.setItem(keys[i], values[i]);
-            }
+        this.checkKeyVal(keys, values);
+        for (var i = 0, n = keys.length; i < n; i++) {
+            this.setItem(keys[i], values[i]);
         }
     };
 
@@ -119,7 +116,6 @@
         if (!obj.hasOwnProperty('id')) {
             throw new Error('This Object of ' + obj + ' has not id property.');
         }
-        return true;
     };
     /* *
      *      setItem by prex and arr
@@ -234,10 +230,10 @@
      *      val      typeof  String
      */
     LsyStorage.prototype.setItem = function (key, val) {
-        if (this.checkKey(key)) {
-            val = this.checkVal(val);
-            win.localStorage.setItem(key, val);
-        }
+        this.checkKey(key);
+        val = this.checkVal(val);
+        win.localStorage.setItem(key, val);
+
     };
     /* *
      *      get some strorages from localStroage.
@@ -297,10 +293,10 @@
      *      val      typeof  String
      */
     LsySession.prototype.setItem = function (key, val) {
-        if (this.checkKey(key)) {
-            val = this.checkVal(val);
-            win.sessionStorage.setItem(key, val);
-        }
+        this.checkKey(key);
+        val = this.checkVal(val);
+        win.sessionStorage.setItem(key, val);
+
     };
     /* *
      *      get some strorages from localStroage.
@@ -348,16 +344,22 @@
      *      create cookie by key and value, and set expires time
      *      key     typeof string
      *      val     typeof string
+     *      path    typeof string
      *      time    typeof number[7days]
      */
-    LsyCookie.prototype.set = function (key, val, time) {
-        if (this.checkKey(key)) {
-            val = this.checkVal(val);
-            time = this.resetTime(time);
-            var exp = new Date();
-            exp.setTime(exp.getTime() + time * 1000);
-            doc.cookie = key + '=' + val + ';expires=' + exp.toGMTString();
+    LsyCookie.prototype.set = function (key, val, time, path) {
+        var exp, pathStr;
+        this.checkKey(key);
+        val = this.checkVal(val);
+        time = this.resetTime(time);
+        exp = new Date();
+        exp.setTime(exp.getTime() + time * 1000);
+        if (path) {
+            this.checkKey(path);
+            path = resetPath(path);
+            pathStr = path ? ';path=' + path : '';
         }
+        doc.cookie = key + '=' + val + ';expires=' + exp.toGMTString() + pathStr;
     };
     /* *
      *      remove cookie by key
@@ -380,7 +382,7 @@
      *      get all cookies, and return object
      */
     LsyCookie.prototype.getAll = function () {
-        var cookies = doc.cookie.split(/;\s/g);
+        var cookies = doc.cookie.split(/;\s/);
         var cookieObj = {};
         var _this = this;
         cookies.forEach(function (item) {
@@ -400,6 +402,29 @@
     LsyCookie.prototype.get = function (key) {
         return this.getAll()[key];
     };
+    /* *
+     *      reset path
+     *      path typeof string
+     */
+    function resetPath(path) {
+        if (/^(\.)?\.\//.test(path)) {
+            var timesArr, n,
+                index = -1,
+                pathName = location.pathname;
+            path = path.replace(/^\.\//, '');
+            timesArr = path.match(/\.\.\//g) || [];
+            n = timesArr.length + 1;
+            for (; n--;) {
+                index = pathName.lastIndexOf('/');
+                if (index != -1) {
+                    pathName = pathName.substr(0, index);
+                }
+            }
+            path = path.replace(/\.\.\//g, '');
+            return pathName + '/' + path;
+        }
+        return path;
+    }
 
     win['LsyStorage'] = new LsyStorage();
     win['LsySession'] = new LsySession();
