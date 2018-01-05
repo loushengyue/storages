@@ -40,12 +40,12 @@
  *              .clear()
  */
 ;(function (win, doc) {
-    var expiresTime = 7 * 24 * 3600;
+    var Storages, LsyCookie, LsyStorage, LsySession, expiresTime = 24 * 3600, version = '1.2.1';
     /* *
      *      The constructor of Storages
      */
-    var Storages = function () {
-        this.version = '1.2.0';
+    Storages = function () {
+        this.version = 'Storages ' + version;
     };
     /* *
      *      setItem by keys and values
@@ -73,7 +73,7 @@
                 }
             } else {
                 for (; i < n; i++) {
-                    hasIdProperty(arr[i])
+                    hasIdProperty(arr[i]);
                     key = prex + '_' + arr[i].id;
                     this.setItem(key, arr[i]);
                 }
@@ -98,8 +98,8 @@
     /* *
      *  ----------------------------------------------------------------------
      */
-    var LsyStorage = function () {
-        this.version = 'Lsy localStorage 1.1.3';
+    LsyStorage = function () {
+        this.version = 'LsyStorage ' + version;
     };
     /* *
      *      class LsyCookie extends Storages
@@ -152,8 +152,8 @@
     /* *
      *  ----------------------------------------------------------------------
      */
-    var LsySession = function () {
-        this.version = 'Lsy sessionStorage 1.2.0';
+    LsySession = function () {
+        this.version = 'LsySession ' + version;
     };
     /* *
      *      class LsyCookie extends Storages
@@ -206,8 +206,8 @@
     /* *
      *  ----------------------------------------------------------------------
      */
-    var LsyCookie = function () {
-        this.version = 'Lsy cookies 1.2.0';
+    LsyCookie = function () {
+        this.version = 'LsyCookie ' + version;
     };
     /* *
      *      class LsyCookie extends Storages
@@ -270,7 +270,6 @@
     LsyCookie.prototype.getAll = function () {
         var cookies = doc.cookie.split(/;\s/);
         var cookieObj = {};
-        var _this = this;
         cookies.forEach(function (item) {
             var key = item.split('=')[0];
             var val = item.split('=')[1];
