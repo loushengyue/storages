@@ -87,12 +87,16 @@
      *      keys        typeof Array
      */
     Storages.prototype.getItemsByKeys = function (keys) {
-        var arr = [];
         var _this = this;
-        keys = sortKeys(keys);
-        keys.forEach(function (key) {
-            arr.push(_this.getItem(key));
-        });
+        var arr = [];
+        if (isArray(keys)) {
+            keys = sortKeys(keys);
+            keys.forEach(function (key) {
+                arr.push(_this.getItem(key));
+            });
+        } else {
+            arr.push(_this.getItem(keys));
+        }
         return arr;
     };
     /* *
