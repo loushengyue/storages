@@ -386,12 +386,16 @@
         if (!keys instanceof Array) {
             return false;
         }
-        keys.sort(function (a, b) {
-            a = Number(a.match(/_\d+$/)[0].substr(1));
-            b = Number(b.match(/_\d+$/)[0].substr(1));
-            return a - b;
-        });
-        return keys;
+        try {
+            keys.sort(function (a, b) {
+                a = Number(a.match(/_\d+$/)[0].substr(1));
+                b = Number(b.match(/_\d+$/)[0].substr(1));
+                return a - b;
+            });
+            return keys;
+        } catch (e) {
+            return keys;
+        }
     }
 
     /* *
