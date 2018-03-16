@@ -1,8 +1,8 @@
 
 ## 序
-这是一个关于浏览器cookie，sessionStorage，localStorage操作的插件，它增加并完善了原有API功能。该插件包括[LsyCookie](http://blog.csdn.net/weixin_41424247/article/details/78859294), [LsySession](http://blog.csdn.net/weixin_41424247/article/details/78879326), [LsyStorage](http://blog.csdn.net/weixin_41424247/article/details/78872004) 三个部分，使用方法非常简单，直接引入[storages-1.2.0.js](https://github.com/loushengyue/storage-group/archive/master.zip)即可。
+这是一个关于浏览器cookie，sessionStorage，localStorage操作的插件，它增加并完善了原有API功能。该插件包括[LsyCookie](http://blog.csdn.net/weixin_41424247/article/details/78859294), [LsySession](http://blog.csdn.net/weixin_41424247/article/details/78879326), [LsyStorage](http://blog.csdn.net/weixin_41424247/article/details/78872004) 三个部分，使用方法非常简单，直接引入[storages.js](https://github.com/loushengyue/storage-group/archive/master.zip)即可。
 
-## storages-1.2.0.js的使用方法
+## storages.js v1.2.4的使用方法
 
 ### LsyCookie部分
 
@@ -18,8 +18,8 @@ LsyCookie.getItem(key[string])
 //获取所有cookie
 LsyCookie.getAll()
 
-//通过cookie名称删除
-LsyCookie.removeItem(key[string])
+//通过cookie名称删除, path为路径（默认为当前路径）
+LsyCookie.removeItem(key[string], path[string:default('./')])
 
 //删除所有cookie
 LsyCookie.clear()
