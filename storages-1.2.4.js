@@ -1,5 +1,5 @@
 /* *
- *      storages-1.2.0.js
+ *      storages-1.2.4.js
  *      author loushengyue
  *      website http://www.loushengyue.com
  */
@@ -36,11 +36,11 @@
  *              .setItem(key[string],val[string|object],time[number],path[string])
  *              .getItem(key[string])
  *              .getAll()
- *              .removeItem(key[string])
+ *              .removeItem(key[string], path[string])
  *              .clear()
  */
 ;(function (win, doc) {
-    var Storages, LsyCookie, LsyStorage, LsySession, expiresTime = 24 * 3600, version = '1.2.1';
+    var Storages, LsyCookie, LsyStorage, LsySession, expiresTime = 24 * 3600, version = '1.2.4';
     /* *
      *      The constructor of Storages
      */
@@ -100,6 +100,26 @@
         return arr;
     };
     /* *
+     *      remove items by prex.
+     *      prex    typeof String
+     */
+    Storages.prototype.removeArr = function (prex) {
+        var keys = this.getKeysByPrex(prex), _this = this;
+        keys.forEach(function (key) {
+            _this.removeItem(key);
+        });
+    };
+    /* *
+     *      get some strorages from localStroage.
+     *      prex       typeof String
+     *      return     typeof Array
+     */
+    Storages.prototype.getArr = function (prex) {
+        var keys = this.getKeysByPrex(prex), arr;
+        arr = this.getItemsByKeys(keys);
+        return arr;
+    };
+    /* *
      *  ----------------------------------------------------------------------
      */
     LsyStorage = function () {
@@ -142,16 +162,14 @@
         win.localStorage.setItem(key, val);
     };
     /* *
-     *      get some strorages from localStroage.
+     *      get keys from localStroage.
      *      prex       typeof String
      *      return     typeof Array
      */
-    LsyStorage.prototype.getArr = function (prex) {
-        var arr,
-            keys = Object.keys(win.localStorage);
+    LsyStorage.prototype.getKeysByPrex = function (prex) {
+        var keys = Object.keys(win.localStorage);
         keys = filterKeysByReg(keys, prex);
-        arr = this.getItemsByKeys(keys);
-        return arr;
+        return keys;
     };
     /* *
      *  ----------------------------------------------------------------------
@@ -196,16 +214,14 @@
         win.sessionStorage.setItem(key, val);
     };
     /* *
-     *      get some strorages from localStroage.
+     *      get keys from sessionStorage.
      *      prex       typeof String
      *      return     typeof Array
      */
-    LsySession.prototype.getArr = function (prex) {
-        var arr,
-            keys = Object.keys(win.sessionStorage);
+    LsySession.prototype.getKeysByPrex = function (prex) {
+        var keys = Object.keys(win.sessionStorage);
         keys = filterKeysByReg(keys, prex);
-        arr = this.getItemsByKeys(keys);
-        return arr;
+        return keys;
     };
     /* *
      *  ----------------------------------------------------------------------
@@ -226,7 +242,7 @@
      *      time    typeof number[7days]
      */
     LsyCookie.prototype.setItem = function (key, val, time, path) {
-        var exp, pathStr;
+        var exp, pathStr = '';
         checkStr(key);
         val = resetVal(val);
         time = resetTime(time);
@@ -235,7 +251,7 @@
         if (path) {
             checkStr(path);
             path = resetPath(path);
-            pathStr = path ? ';path=' + path : '';
+            pathStr = path ? ';path=' + path : pathStr;
         }
         doc.cookie = key + '=' + val + ';expires=' + exp.toGMTString() + pathStr;
     };
@@ -249,8 +265,9 @@
      *      remove cookie by key
      *      key typeof string
      */
-    LsyCookie.prototype.removeItem = function (key) {
-        this.setItem(key, '', -1);
+    LsyCookie.prototype.removeItem = function (key, path) {
+	path = path ? path : './';    
+        this.set(key, '', -1, path);
     };
     /* *
      *      remove all cookies
