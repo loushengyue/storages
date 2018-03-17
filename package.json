@@ -1,6 +1,6 @@
 {
   "name": "lsy-storages",
-  "version": "2.0.2",
+  "version": "2.0.4",
   "description": "This is a storages about localStorage, sessionStorage and cookie.",
   "main": "dist/storages.js",
   "homepage": "https://github.com/loushengyue/storages",

@@ -2,7 +2,23 @@
 ## 序
 这是一个关于浏览器cookie，sessionStorage，localStorage操作的插件，它增加并完善了原有API功能。该插件包括[LsyCookie](http://blog.csdn.net/weixin_41424247/article/details/78859294), [LsySession](http://blog.csdn.net/weixin_41424247/article/details/78879326), [LsyStorage](http://blog.csdn.net/weixin_41424247/article/details/78872004) 三个部分，使用方法非常简单，直接引入[storages.js](https://github.com/loushengyue/storage-group/archive/master.zip)即可。
 
-## storages.js v2.0.2的使用方法
+## storages.js v2.0.5 在webpack下的es6开发环境下的使用方法
+
+### 安装
+
+```
+$ npm install lsy-storages --save
+```
+### 模块导入
+
+```
+import {
+    localStorage as LsyStorage,
+    sessionStorage as LsySession,
+    cookie as LsyCookie
+} from 'lsy-storages';
+
+```
 
 ### LsyCookie部分
 
