@@ -1,0 +1,21 @@
+{
+  "name": "lsy-storages",
+  "version": "2.0.2",
+  "description": "This is a storages about localStorage, sessionStorage and cookie.",
+  "main": "dist/storages.js",
+  "homepage": "https://github.com/loushengyue/storages",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/loushengyue/storages"
+  },
+  "keywords": [
+    "localStorage",
+    "sessionStorage",
+    "cookie"
+  ],
+  "author": "loushengyue",
+  "license": "ISC"
+}
